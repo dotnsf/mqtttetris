@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<title>QuickStart MQTT</title>
+<script src="//code.jquery.com/jquery-2.0.3.min.js"></script>
+<link rel="stylesheet" href="//code.jquery.com/mobile/1.3.2/jquery.mobile-1.3.2.min.css" />
+<script src="//code.jquery.com/mobile/1.3.2/jquery.mobile-1.3.2.min.js"></script>
+
+<script src="./mqttws31.js"></script>
+<meta name="description" content="IBM IoTF QuickStart にスマホのジャイロ情報をパブリッシュするサービス"/>
+<meta name="keywords" content="IBM, Bluemix, IoT, QuickStart"/>
+
+<script type="text/javascript">
+var deviceid = null;
+var devicetype = "MyDevice";
+var eventtype = null;
+var test = null;
+var client;
+var pubTopic = 'iot-2/evt/status/fmt/json';
+var phoneData = {};
+phoneData.d = {};
+
+var lat = null;
+var lng = null;
+var ac = null;
+var acg = null;
+var rot = null;
+var ori = null;
+$(function(){
+	getDeviceId();
+
+	if( window.DeviceMotionEvent ){
+	    window.addEventListener( "devicemotion", deviceMotion );
+	}
+	if( window.DeviceOrientationEvent ){
+	    window.addEventListener( "deviceorientation", deviceOrientation );
+	}
+ 
+	$('#frm').submit( function(){
+		deviceid = $('#deviceid').val();
+		devicetype = $('#devicetype').val();
+		eventtype = $('#eventtype').val();
+
+		return false;
+	});
+	
+	var clientID = "d:quickstart:" + devicetype + ":" + deviceid;
+	console.log( "clientID=" + clientID );
+	client = new Messaging.Client("quickstart.messaging.internetofthings.ibmcloud.com", 443, clientID );
+	client.onConnectionLost = onConnectionLost;
+	client.connect({onSuccess: onConnect, onFailure: onConnectFailure, useSSL: true});
+});
+
+function deviceMotion( e ) {
+	e.preventDefault();
+	//console.log( e );
+	
+	ac = e.acceleration;
+	acg = e.accelerationIncludingGravity;
+	rot = e.rotationRate;
+	
+	publishMessage();
+}
+
+function deviceOrientation( e ) {
+	//e.preventDefault();
+	//console.log( e );
+	
+	var tiltLR = e.gamma;
+	var tiltFB = e.beta;
+	var dir = e.alpha;
+	ori = {};
+	ori['tiltLR'] = tiltLR;
+	ori['tiltFB'] = tiltFB;
+	ori['dir'] = dir;
+	
+	publishMessage();
+}
+
+function publishMessage(){
+	if( deviceid != null ){
+		var d = {};
+		if( lat != null ){
+			d['lat'] = lat;
+			$('#lat').html( lat );
+		}
+		if( lng != null ){
+			d['lng'] = lng;
+			$('#lng').html( lng );
+		}
+		if( ac != null ){
+			d['ac'] = ac;
+			$('#ac_x').html( ac['x'] );
+			$('#ac_y').html( ac['y'] );
+			$('#ac_z').html( ac['z'] );
+		}
+		if( acg != null ){
+			d['acg'] = acg;
+			$('#acg_x').html( acg['x'] );
+			$('#acg_y').html( acg['y'] );
+			$('#acg_z').html( acg['z'] );
+		}
+		if( rot != null ){
+			d['rot'] = rot;
+			$('#rot_a').html( rot['alpha'] );
+			$('#rot_b').html( rot['beta'] );
+			$('#rot_g').html( rot['gamma'] );
+		}
+		if( ori != null ){
+			d['ori'] = ori;
+			$('#ori_lr').html( ori['tiltLR'] );
+			$('#ori_fb').html( ori['tiltFB'] );
+			$('#ori_dir').html( ori['dir'] );
+		}
+		
+		if( d ){
+			phoneData.d = d;
+			phoneData.publish();
+		}
+	}
+}
+
+
+function onConnect() {
+	console.log("Connected");
+}
+
+function onConnectFailure(error) {
+	console.log("Connect Failed");
+	console.log(error.errorCode);
+	console.log(error.errorMessage);
+}
+
+function onConnectionLost(response) {
+	console.log("onConnectionLost")
+	if (response.errorCode !== 0) {
+			console.log("onConnectionLost:"+response.errorMessage);
+	}
+	clearInterval(msgInterval);
+	client.connect({onSuccess: onConnect,
+					onFailure: onConnectFailure});
+}
+
+
+phoneData.toJson = function(){
+	return JSON.stringify( this );
+}
+
+phoneData.publish = function(){
+	var message = new Messaging.Message( phoneData.toJson() );
+	message.destinationName = pubTopic;
+	client.send( message );
+}
+
+
+function getDeviceId(){
+	var did = null;
+	cookies = document.cookie.split( "; " );
+	for( i = 0; i < cookies.length; i ++ ){
+		str = cookies[i].split( "=" );
+		if( unescape( str[0] ) == "deviceid" ){
+			did = unescape( unescape( str[1] ) );
+		}
+	}
+	
+	if( did != null ){
+		deviceid = did;
+	}else{
+		deviceid = generateDeviceId();
+		//console.log( "deviceid = " + deviceid );
+	}
+	$('#deviceid').html( deviceid );
+	document.title = deviceid;
+}
+
+function generateDeviceId(){
+	var did = "";
+	var hx = "0123456789abcdef";
+	for( i = 0; i < 12; i ++ ){
+		var n = Math.floor( Math.random() * 16 );
+		if( n == 16 ){ n = 15; }
+		c = hx.charAt( n );
+		did += c;
+	}
+	
+	var str = "deviceid=" + did;
+	document.cookie = str;
+	
+	return did;
+}
+</script>
+
+</head>
+<body>
+
+<div id="page0" data-role="page">
+ <div data-role="header" data-position="fixed">
+  <h1 id="deviceid">************</h1>
+ </div>
+ 
+ <div data-role="content">
+  <table border="1" cellspacing="0" data-theme="c" width="100%">
+   <thead>
+    <tr><th width="50%">Keys</th><th>Values</th></tr>
+   </thead>
+   <tbody>
+    <tr><td>Lat</td><td id="lat">&nbsp;</td></tr>
+    <tr><td>Lng</td><td id="lng">&nbsp;</td></tr>
+    <tr><td>Acceleration.X</td><td id="ac_x">&nbsp;</td></tr>
+    <tr><td>Acceleration.Y</td><td id="ac_y">&nbsp;</td></tr>
+    <tr><td>Acceleration.Z</td><td id="ac_z">&nbsp;</td></tr>
+    <tr><td>Acceleration(Gravity).X</td><td id="acg_x">&nbsp;</td></tr>
+    <tr><td>Acceleration(Gravity).Y</td><td id="acg_y">&nbsp;</td></tr>
+    <tr><td>Acceleration(Gravity).Z</td><td id="acg_z">&nbsp;</td></tr>
+    <tr><td>Rotate.A</td><td id="rot_a">&nbsp;</td></tr>
+    <tr><td>Rotate.B</td><td id="rot_b">&nbsp;</td></tr>
+    <tr><td>Rotate.G</td><td id="rot_g">&nbsp;</td></tr>
+    <tr><td>Orientation.LR</td><td id="ori_lr">&nbsp;</td></tr>
+    <tr><td>Orientation.FB</td><td id="ori_fb">&nbsp;</td></tr>
+    <tr><td>Orientation.DIR</td><td id="ori_dir">&nbsp;</td></tr>
+   </tbody>
+  </table>
+ </div>
+</div>
+
+</body>
+</html>
