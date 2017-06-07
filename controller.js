@@ -20,7 +20,7 @@ document.body.onkeydown = function( e ) {
 
 var socket;
 var th = 5; //. しきい値
-var wsUrl = 'ws://' + location.hostname + '/ws/sensor';
+var wsUrl = 'wss://' + location.hostname + '/ws/sensor';
 function connect(){
   socket = new WebSocket(wsUrl);
   socket.onmessage = function(e) {
