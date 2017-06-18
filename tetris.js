@@ -1,11 +1,11 @@
-var COLS = 10, ROWS = 20;  // ‰¡10Ac20ƒ}ƒX
-var board = [];  // ”Õ–Êî•ñ
-var lose;  // ˆê”Ôã‚Ü‚Å‚¢‚Á‚¿‚á‚Á‚½‚©‚Ç‚¤‚©
-var interval;  // ƒQ[ƒ€‚ğÀs‚·‚éƒ^ƒCƒ}[‚ğ•Û‚·‚é•Ï”
-var current; // ¡‘€ì‚µ‚Ä‚¢‚éƒuƒƒbƒN‚ÌŒ`
-var currentX, currentY; // ¡‘€ì‚µ‚Ä‚¢‚éƒuƒƒbƒN‚ÌˆÊ’u
+var COLS = 10, ROWS = 20;  // æ¨ª10ã€ç¸¦20ãƒã‚¹
+var board = [];  // ç›¤é¢æƒ…å ±
+var lose;  // ä¸€ç•ªä¸Šã¾ã§ã„ã£ã¡ã‚ƒã£ãŸã‹ã©ã†ã‹
+var interval;  // ã‚²ãƒ¼ãƒ ã‚’å®Ÿè¡Œã™ã‚‹ã‚¿ã‚¤ãƒãƒ¼ã‚’ä¿æŒã™ã‚‹å¤‰æ•°
+var current; // ä»Šæ“ä½œã—ã¦ã„ã‚‹ãƒ–ãƒ­ãƒƒã‚¯ã®å½¢
+var currentX, currentY; // ä»Šæ“ä½œã—ã¦ã„ã‚‹ãƒ–ãƒ­ãƒƒã‚¯ã®ä½ç½®
 
-// ‘€ì‚·‚éƒuƒƒbƒN‚Ìƒpƒ^[ƒ“
+// æ“ä½œã™ã‚‹ãƒ–ãƒ­ãƒƒã‚¯ã®ãƒ‘ã‚¿ãƒ¼ãƒ³
 var shapes = [
     [ 1, 1, 1, 1 ],
     [ 1, 1, 1, 0,
@@ -22,13 +22,13 @@ var shapes = [
       1, 1, 1 ]
 ];
 
-// ƒuƒƒbƒN‚ÌF
+// ãƒ–ãƒ­ãƒƒã‚¯ã®è‰²
 var colors = [
     'cyan', 'orange', 'blue', 'yellow', 'red', 'green', 'purple'
 ];
 
 
-// ”Õ–Ê‚ğ‹ó‚É‚·‚é
+// ç›¤é¢ã‚’ç©ºã«ã™ã‚‹
 function init() {
   for ( var y = 0; y < ROWS; ++y ) {
     board[ y ] = [];
@@ -38,11 +38,11 @@ function init() {
   }
 }
 
-// shapes‚©‚çƒ‰ƒ“ƒ_ƒ€‚ÉƒuƒƒbƒN‚Ìƒpƒ^[ƒ“‚ğo—Í‚µA”Õ–Ê‚Ìˆê”Ôã‚ÖƒZƒbƒg‚·‚é
+// shapesã‹ã‚‰ãƒ©ãƒ³ãƒ€ãƒ ã«ãƒ–ãƒ­ãƒƒã‚¯ã®ãƒ‘ã‚¿ãƒ¼ãƒ³ã‚’å‡ºåŠ›ã—ã€ç›¤é¢ã®ä¸€ç•ªä¸Šã¸ã‚»ãƒƒãƒˆã™ã‚‹
 function newShape() {
-  var id = Math.floor( Math.random() * shapes.length );  // ƒ‰ƒ“ƒ_ƒ€‚ÉƒCƒ“ƒfƒbƒNƒX‚ğo‚·
+  var id = Math.floor( Math.random() * shapes.length );  // ãƒ©ãƒ³ãƒ€ãƒ ã«ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‚’å‡ºã™
   var shape = shapes[ id ];
-  // ƒpƒ^[ƒ“‚ğ‘€ìƒuƒƒbƒN‚ÖƒZƒbƒg‚·‚é
+  // ãƒ‘ã‚¿ãƒ¼ãƒ³ã‚’æ“ä½œãƒ–ãƒ­ãƒƒã‚¯ã¸ã‚»ãƒƒãƒˆã™ã‚‹
   current = [];
   for ( var y = 0; y < 4; ++y ) {
     current[ y ] = [];
@@ -56,32 +56,32 @@ function newShape() {
       }
     }
   }
-  // ƒuƒƒbƒN‚ğ”Õ–Ê‚Ìã‚Ì‚Ù‚¤‚ÉƒZƒbƒg‚·‚é
+  // ãƒ–ãƒ­ãƒƒã‚¯ã‚’ç›¤é¢ã®ä¸Šã®ã»ã†ã«ã‚»ãƒƒãƒˆã™ã‚‹
   currentX = 5;
   currentY = 0;
 }
 
 function tick() {
-  // ‚P‚Â‰º‚ÖˆÚ“®‚·‚é
+  // ï¼‘ã¤ä¸‹ã¸ç§»å‹•ã™ã‚‹
   if ( valid( 0, 1 ) ) {
     ++currentY;
   }
-  // ‚à‚µ’…’n‚µ‚Ä‚¢‚½‚ç(‚P‚Â‚µ‚½‚ÉƒuƒƒbƒN‚ª‚ ‚Á‚½‚ç)
+  // ã‚‚ã—ç€åœ°ã—ã¦ã„ãŸã‚‰(ï¼‘ã¤ã—ãŸã«ãƒ–ãƒ­ãƒƒã‚¯ãŒã‚ã£ãŸã‚‰)
   else {
-    freeze();  // ‘€ìƒuƒƒbƒN‚ğ”Õ–Ê‚ÖŒÅ’è‚·‚é
-    clearLines();  // ƒ‰ƒCƒ“Á‹ˆ—
+    freeze();  // æ“ä½œãƒ–ãƒ­ãƒƒã‚¯ã‚’ç›¤é¢ã¸å›ºå®šã™ã‚‹
+    clearLines();  // ãƒ©ã‚¤ãƒ³æ¶ˆå»å‡¦ç†
     if (lose) {
-      // ‚à‚µƒQ[ƒ€ƒI[ƒo‚È‚çÅ‰‚©‚çn‚ß‚é
+      // ã‚‚ã—ã‚²ãƒ¼ãƒ ã‚ªãƒ¼ãƒãªã‚‰æœ€åˆã‹ã‚‰å§‹ã‚ã‚‹
       newGame();
       return false;
     }
-    // V‚µ‚¢‘€ìƒuƒƒbƒN‚ğƒZƒbƒg‚·‚é
+    // æ–°ã—ã„æ“ä½œãƒ–ãƒ­ãƒƒã‚¯ã‚’ã‚»ãƒƒãƒˆã™ã‚‹
     newShape();
   }
 }
 
-// w’è‚³‚ê‚½•ûŒü‚ÉA‘€ìƒuƒƒbƒN‚ğ“®‚©‚¹‚é‚©‚Ç‚¤‚©ƒ`ƒFƒbƒN‚·‚é
-// ƒQ[ƒ€ƒI[ƒo[”»’è‚à‚±‚±‚Ås‚¤
+// æŒ‡å®šã•ã‚ŒãŸæ–¹å‘ã«ã€æ“ä½œãƒ–ãƒ­ãƒƒã‚¯ã‚’å‹•ã‹ã›ã‚‹ã‹ã©ã†ã‹ãƒã‚§ãƒƒã‚¯ã™ã‚‹
+// ã‚²ãƒ¼ãƒ ã‚ªãƒ¼ãƒãƒ¼åˆ¤å®šã‚‚ã“ã“ã§è¡Œã†
 function valid( offsetX, offsetY, newCurrent ) {
   offsetX = offsetX || 0;
   offsetY = offsetY || 0;
@@ -99,7 +99,7 @@ function valid( offsetX, offsetY, newCurrent ) {
              || x + offsetX >= COLS ) {
                     if (offsetY == 1 && offsetX - currentX == 0 && offsetY - currentY == 1) {
                         console.log('game over');
-                        lose = true; // ‚à‚µ‘€ìƒuƒƒbƒN‚ª”Õ–Ê‚Ìã‚É‚ ‚Á‚½‚çƒQ[ƒ€ƒI[ƒo[‚É‚·‚é
+                        lose = true; // ã‚‚ã—æ“ä½œãƒ–ãƒ­ãƒƒã‚¯ãŒç›¤é¢ã®ä¸Šã«ã‚ã£ãŸã‚‰ã‚²ãƒ¼ãƒ ã‚ªãƒ¼ãƒãƒ¼ã«ã™ã‚‹
                     }
                return false;
              }
@@ -109,7 +109,7 @@ function valid( offsetX, offsetY, newCurrent ) {
   return true;
 }
 
-// ‘€ìƒuƒƒbƒN‚ğ”Õ–Ê‚ÉƒZƒbƒg‚·‚éŠÖ”
+// æ“ä½œãƒ–ãƒ­ãƒƒã‚¯ã‚’ç›¤é¢ã«ã‚»ãƒƒãƒˆã™ã‚‹é–¢æ•°
 function freeze() {
   for ( var y = 0; y < 4; ++y ) {
     for ( var x = 0; x < 4; ++x ) {
@@ -120,27 +120,27 @@ function freeze() {
   }
 }
 
-// ˆês‚ª‘µ‚Á‚Ä‚¢‚é‚©’²‚×A‘µ‚Á‚Ä‚¢‚½‚ç‚»‚ê‚ç‚ğÁ‚·
+// ä¸€è¡ŒãŒæƒã£ã¦ã„ã‚‹ã‹èª¿ã¹ã€æƒã£ã¦ã„ãŸã‚‰ãã‚Œã‚‰ã‚’æ¶ˆã™
 function clearLines() {
   for ( var y = ROWS - 1; y >= 0; --y ) {
     var rowFilled = true;
-    // ˆês‚ª‘µ‚Á‚Ä‚¢‚é‚©’²‚×‚é
+    // ä¸€è¡ŒãŒæƒã£ã¦ã„ã‚‹ã‹èª¿ã¹ã‚‹
     for ( var x = 0; x < COLS; ++x ) {
       if ( board[ y ][ x ] == 0 ) {
         rowFilled = false;
         break;
       }
     }
-    // ‚à‚µˆês‘µ‚Á‚Ä‚¢‚½‚ç, ƒTƒEƒ“ƒh‚ğ–Â‚ç‚µ‚Ä‚»‚ê‚ç‚ğÁ‚·B
+    // ã‚‚ã—ä¸€è¡Œæƒã£ã¦ã„ãŸã‚‰, ã‚µã‚¦ãƒ³ãƒ‰ã‚’é³´ã‚‰ã—ã¦ãã‚Œã‚‰ã‚’æ¶ˆã™ã€‚
     if ( rowFilled ) {
-      document.getElementById( 'clearsound' ).play();  // Á–ÅƒTƒEƒ“ƒh‚ğ–Â‚ç‚·
-      // ‚»‚Ìã‚É‚ ‚Á‚½ƒuƒƒbƒN‚ğˆê‚Â‚¸‚Â—‚Æ‚µ‚Ä‚¢‚­
+      document.getElementById( 'clearsound' ).play();  // æ¶ˆæ»…ã‚µã‚¦ãƒ³ãƒ‰ã‚’é³´ã‚‰ã™
+      // ãã®ä¸Šã«ã‚ã£ãŸãƒ–ãƒ­ãƒƒã‚¯ã‚’ä¸€ã¤ãšã¤è½ã¨ã—ã¦ã„ã
       for ( var yy = y; yy > 0; --yy ) {
         for ( var x = 0; x < COLS; ++x ) {
           board[ yy ][ x ] = board[ yy - 1 ][ x ];
         }
       }
-      ++y;  // ˆês—‚Æ‚µ‚½‚Ì‚Åƒ`ƒFƒbƒNˆ—‚ğˆê‚Â‰º‚Ö‘—‚é
+      ++y;  // ä¸€è¡Œè½ã¨ã—ãŸã®ã§ãƒã‚§ãƒƒã‚¯å‡¦ç†ã‚’ä¸€ã¤ä¸‹ã¸é€ã‚‹
     }
   }
 }
@@ -149,11 +149,11 @@ function clearLines() {
 
 
 function newGame() {
-  clearInterval(interval);  // ƒQ[ƒ€ƒ^ƒCƒ}[‚ğƒNƒŠƒA
-  init();  // ”Õ–Ê‚ğ‚Ü‚Á‚³‚ç‚É‚·‚é
-  newShape();  // ‘€ìƒuƒƒbƒN‚ğƒZƒbƒg
-  lose = false;  // •‰‚¯ƒtƒ‰ƒbƒO
-  interval = setInterval( tick, 500 );  // 250ƒ~ƒŠ•b‚²‚Æ‚Étick‚Æ‚¢‚¤ŠÖ”‚ğŒÄ‚Ño‚·
+  clearInterval(interval);  // ã‚²ãƒ¼ãƒ ã‚¿ã‚¤ãƒãƒ¼ã‚’ã‚¯ãƒªã‚¢
+  init();  // ç›¤é¢ã‚’ã¾ã£ã•ã‚‰ã«ã™ã‚‹
+  newShape();  // æ“ä½œãƒ–ãƒ­ãƒƒã‚¯ã‚’ã‚»ãƒƒãƒˆ
+  lose = false;  // è² ã‘ãƒ•ãƒ©ãƒƒã‚°
+  interval = setInterval( tick, 500 );  // 250ãƒŸãƒªç§’ã”ã¨ã«tickã¨ã„ã†é–¢æ•°ã‚’å‘¼ã³å‡ºã™
 }
 
 newGame();

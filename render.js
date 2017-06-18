@@ -1,43 +1,43 @@
 /*
- Œ»İ‚Ì”Õ–Ê‚Ìó‘Ô‚ğ•`‰æ‚·‚éˆ—
+ ç¾åœ¨ã®ç›¤é¢ã®çŠ¶æ…‹ã‚’æç”»ã™ã‚‹å‡¦ç†
  */
-var canvas = document.getElementsByTagName( 'canvas' )[ 0 ];  // ƒLƒƒƒ“ƒoƒX
-var ctx = canvas.getContext( '2d' ); // ƒRƒ“ƒeƒNƒXƒg
-var W = 300, H = 600;  // ƒLƒƒƒ“ƒoƒX‚ÌƒTƒCƒY
-var BLOCK_W = W / COLS, BLOCK_H = H / ROWS;  // ƒ}ƒX‚Ì•‚ğİ’è
+var canvas = document.getElementsByTagName( 'canvas' )[ 0 ];  // ã‚­ãƒ£ãƒ³ãƒã‚¹
+var ctx = canvas.getContext( '2d' ); // ã‚³ãƒ³ãƒ†ã‚¯ã‚¹ãƒˆ
+var W = 300, H = 600;  // ã‚­ãƒ£ãƒ³ãƒã‚¹ã®ã‚µã‚¤ã‚º
+var BLOCK_W = W / COLS, BLOCK_H = H / ROWS;  // ãƒã‚¹ã®å¹…ã‚’è¨­å®š
 
-// x, y‚Ì•”•ª‚Öƒ}ƒX‚ğ•`‰æ‚·‚éˆ—
+// x, yã®éƒ¨åˆ†ã¸ãƒã‚¹ã‚’æç”»ã™ã‚‹å‡¦ç†
 function drawBlock( x, y ) {
   ctx.fillRect( BLOCK_W * x, BLOCK_H * y, BLOCK_W - 1 , BLOCK_H - 1 );
   ctx.strokeRect( BLOCK_W * x, BLOCK_H * y, BLOCK_W - 1 , BLOCK_H - 1 );
 }
 
-// ”Õ–Ê‚Æ‘€ìƒuƒƒbƒN‚ğ•`‰æ‚·‚é
+// ç›¤é¢ã¨æ“ä½œãƒ–ãƒ­ãƒƒã‚¯ã‚’æç”»ã™ã‚‹
 function render() {
-  ctx.clearRect( 0, 0, W, H );  // ˆê“xƒLƒƒƒ“ƒoƒX‚ğ^‚Á‚³‚ç‚É‚·‚é
-  ctx.strokeStyle = 'black';  // ‚¦‚ñ‚Ò‚Â‚ÌF‚ğ•‚É‚·‚é
+  ctx.clearRect( 0, 0, W, H );  // ä¸€åº¦ã‚­ãƒ£ãƒ³ãƒã‚¹ã‚’çœŸã£ã•ã‚‰ã«ã™ã‚‹
+  ctx.strokeStyle = 'black';  // ãˆã‚“ã´ã¤ã®è‰²ã‚’é»’ã«ã™ã‚‹
 
-  // ”Õ–Ê‚ğ•`‰æ‚·‚é
+  // ç›¤é¢ã‚’æç”»ã™ã‚‹
   for ( var x = 0; x < COLS; ++x ) {
     for ( var y = 0; y < ROWS; ++y ) {
-      if ( board[ y ][ x ] ) {  // ƒ}ƒX‚ª‹óA‚Â‚Ü‚è0‚Å‚Í‚È‚©‚Á‚½‚ç
-        ctx.fillStyle = colors[ board[ y ][ x ] - 1 ];  // ƒ}ƒX‚Ìí—Ş‚É‡‚í‚¹‚Ä“h‚è‚Â‚Ô‚·F‚ğİ’è
-        drawBlock( x, y );  // ƒ}ƒX‚ğ•`‰æ
+      if ( board[ y ][ x ] ) {  // ãƒã‚¹ãŒç©ºã€ã¤ã¾ã‚Š0ã§ã¯ãªã‹ã£ãŸã‚‰
+        ctx.fillStyle = colors[ board[ y ][ x ] - 1 ];  // ãƒã‚¹ã®ç¨®é¡ã«åˆã‚ã›ã¦å¡—ã‚Šã¤ã¶ã™è‰²ã‚’è¨­å®š
+        drawBlock( x, y );  // ãƒã‚¹ã‚’æç”»
       }
     }
   }
 
-  // ‘€ìƒuƒƒbƒN‚ğ•`‰æ‚·‚é
+  // æ“ä½œãƒ–ãƒ­ãƒƒã‚¯ã‚’æç”»ã™ã‚‹
   for ( var y = 0; y < 4; ++y ) {
     for ( var x = 0; x < 4; ++x ) {
       if ( current[ y ][ x ] ) {
-        ctx.fillStyle = colors[ current[ y ][ x ] - 1 ];  // ƒ}ƒX‚Ìí—Ş‚É‡‚í‚¹‚Ä“h‚è‚Â‚Ô‚·F‚ğİ’è
-        drawBlock( currentX + x, currentY + y );  // ƒ}ƒX‚ğ•`‰æ
+        ctx.fillStyle = colors[ current[ y ][ x ] - 1 ];  // ãƒã‚¹ã®ç¨®é¡ã«åˆã‚ã›ã¦å¡—ã‚Šã¤ã¶ã™è‰²ã‚’è¨­å®š
+        drawBlock( currentX + x, currentY + y );  // ãƒã‚¹ã‚’æç”»
       }
     }
   }
 }
 
-// 30ƒ~ƒŠ•b‚²‚Æ‚Éó‘Ô‚ğ•`‰æ‚·‚éŠÖ”‚ğŒÄ‚Ño‚·
+// 30ãƒŸãƒªç§’ã”ã¨ã«çŠ¶æ…‹ã‚’æç”»ã™ã‚‹é–¢æ•°ã‚’å‘¼ã³å‡ºã™
 setInterval( render, 30 );
 
